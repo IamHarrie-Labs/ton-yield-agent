@@ -37,8 +37,8 @@ function H3({ children }: { children: React.ReactNode }) {
   return <h3 className="text-[17px] font-bold text-black dark:text-white mt-8 mb-3">{children}</h3>;
 }
 
-function P({ children }: { children: React.ReactNode }) {
-  return <p>{children}</p>;
+function P({ children, className }: { children: React.ReactNode; className?: string }) {
+  return <p className={className}>{children}</p>;
 }
 
 function Code({ children }: { children: React.ReactNode }) {

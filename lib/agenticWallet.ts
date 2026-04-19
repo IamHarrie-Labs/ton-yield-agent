@@ -8,7 +8,7 @@
  */
 
 import { KeyPair, mnemonicNew, mnemonicToPrivateKey } from "@ton/crypto";
-import { WalletContractV5R1, internal, toNano } from "@ton/ton";
+import { WalletContractV5R1, internal, toNano, SendMode } from "@ton/ton";
 import { TonClient } from "@ton/ton";
 
 const TESTNET_ENDPOINT = "https://testnet.toncenter.com/api/v2/jsonRPC";
@@ -93,6 +93,7 @@ export async function executeAgentTx(params: {
   await contract.sendTransfer({
     seqno,
     secretKey: keyPair.secretKey,
+    sendMode:  SendMode.PAY_GAS_SEPARATELY,
     messages: [
       internal({
         to:     params.to,
