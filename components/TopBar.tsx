@@ -25,9 +25,17 @@ export function TopBar({ agentState, agentWallet }: {
       {/* Logo */}
       <div className="flex items-center gap-2 md:gap-3 min-w-0">
         <a href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-6 h-6 bg-[#0098EA] rounded-sm flex items-center justify-center">
-            <span className="text-white text-[10px] font-bold">TY</span>
-          </div>
+          {/* Orator brand mark */}
+          <svg width="26" height="26" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
+            <circle cx="28" cy="28" r="11" fill="none" stroke="currentColor" strokeWidth="2" className="text-black dark:text-white"/>
+            <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
+            <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+            <line x1="46" y1="14" x2="42.2" y2="16.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" className="text-black dark:text-white"/>
+            <line x1="46" y1="42" x2="42.2" y2="39.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" className="text-black dark:text-white"/>
+            <line x1="10" y1="14" x2="13.8" y2="16.2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" className="text-black dark:text-white"/>
+            <line x1="10" y1="42" x2="13.8" y2="39.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" className="text-black dark:text-white"/>
+          </svg>
           <span className="font-bold text-[14px] md:text-[15px] tracking-tight text-black dark:text-white">
             TON Yield
           </span>
