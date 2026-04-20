@@ -37,8 +37,10 @@ export function AgentFeed({ logs, agentState }: Props) {
   const isLive      = agentState === "thinking" || agentState === "executing";
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [displayLogs.length]);
+    // Only auto-scroll when real logs are added — never on mount/placeholder
+    if (logs.length === 0) return;
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [logs.length]);
 
   return (
     <div className={`rounded-2xl overflow-hidden flex flex-col h-[360px] md:h-[460px] border ${

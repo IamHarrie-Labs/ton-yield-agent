@@ -1,6 +1,6 @@
 "use client";
 
-import { useTonWallet } from "@tonconnect/ui-react";
+import { useTonWallet, useTonAddress } from "@tonconnect/ui-react";
 import { useRouter }    from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion }       from "framer-motion";
@@ -88,10 +88,12 @@ function exportLogsCSV(logs: AgentLog[]) {
 
 // ─── Inner dashboard (needs toast context) ───────────────────────────────────
 function DashboardInner() {
-  const wallet = useTonWallet();
-  const router = useRouter();
-  const { toast } = useToast();
+  const wallet        = useTonWallet();
+  const connectedAddr = useTonAddress();          // friendly address of connected wallet
+  const router        = useRouter();
+  const { toast }     = useToast();
 
+  const [walletBalance, setWalletBalance] = useState<number | null>(null);
   const [agentState,    setAgentState]    = useState<AgentState>("idle");
   const [goal,          setGoal]          = useState<Goal>("balanced");
   const [amount,        setAmount]        = useState<number>(10);
@@ -141,6 +143,23 @@ function DashboardInner() {
   useEffect(() => {
     if (!wallet) router.push("/");
   }, [wallet, router]);
+
+  // ── Fetch connected wallet balance ───────────────────────────────────────
+  useEffect(() => {
+    if (!connectedAddr) return;
+    const fetchBalance = async () => {
+      try {
+        const res  = await fetch(`/api/balance?address=${encodeURIComponent(connectedAddr)}`);
+        const data = await res.json();
+        setWalletBalance(typeof data.balance === "number" ? data.balance : null);
+      } catch {
+        setWalletBalance(null);
+      }
+    };
+    fetchBalance();
+    const iv = setInterval(fetchBalance, 15_000); // refresh every 15s
+    return () => clearInterval(iv);
+  }, [connectedAddr]);
 
   // ── Deduplicate logs ─────────────────────────────────────────────────────
   const mergeLogs = useCallback((incoming: AgentLog[]) => {
@@ -289,6 +308,7 @@ function DashboardInner() {
               bestPoolApy={bestPoolApy}
               position={position}
               actionsToday={actionsToday}
+              walletBalance={walletBalance}
             />
           </motion.div>
 

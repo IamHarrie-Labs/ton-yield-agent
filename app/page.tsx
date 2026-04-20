@@ -91,7 +91,7 @@ export default function LandingPage() {
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#0098EA] animate-pulse" />
             <span className="text-[12px] font-medium text-black/60 dark:text-white/50 tracking-wide uppercase">
-              Testnet Live — STON.fi Hackathon 2025
+              Testnet Live — TON Blockchain
             </span>
           </motion.div>
 
@@ -232,7 +232,7 @@ export default function LandingPage() {
             <span className="text-white/40 text-[13px]">Surge</span>
           </div>
           <p className="text-[12px] text-white/20">
-            Built for the STON.fi Vibe Coding Hackathon · Tonstakers track · 2025
+Surge · Autonomous DeFi on TON · 2025
           </p>
         </div>
       </footer>
