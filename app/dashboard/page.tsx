@@ -322,6 +322,7 @@ function DashboardInner() {
               bestPoolApy={bestPoolApy}
               position={position}
               actionsToday={actionsToday}
+              walletBalance={walletBalance}
             />
           </motion.div>
 

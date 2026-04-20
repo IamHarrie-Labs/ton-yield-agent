@@ -1,25 +1,30 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const TONCENTER = "https://testnet.toncenter.com/api/v2";
+// TonAPI testnet — free, no key needed, handles all address formats
+const TONAPI = "https://testnet.tonapi.io/v2/accounts";
 
 export async function GET(req: NextRequest) {
   const address = req.nextUrl.searchParams.get("address") ?? "";
   if (!address) return NextResponse.json({ balance: null });
 
   try {
-    const apiKey = process.env.TONCENTER_API_KEY ?? "";
-    const url    = `${TONCENTER}/getAddressBalance?address=${encodeURIComponent(address)}${apiKey ? `&api_key=${apiKey}` : ""}`;
-    const res    = await fetch(url, { next: { revalidate: 10 } });
+    const res = await fetch(`${TONAPI}/${encodeURIComponent(address)}`, {
+      headers: { "Accept": "application/json" },
+      cache: "no-store",
+    });
 
-    if (!res.ok) return NextResponse.json({ balance: null });
+    if (!res.ok) {
+      console.error(`TonAPI balance error: ${res.status} for ${address}`);
+      return NextResponse.json({ balance: null });
+    }
 
     const json = await res.json();
-    // Response: { "ok": true, "result": "1234567890" }  (nanoTON string)
-    if (!json.ok || json.result == null) return NextResponse.json({ balance: null });
-
-    const ton = Number(json.result) / 1e9;
+    // TonAPI returns balance in nanoTON as a number
+    const nanoton = json.balance ?? 0;
+    const ton = Number(nanoton) / 1e9;
     return NextResponse.json({ balance: ton });
-  } catch {
+  } catch (err) {
+    console.error("Balance fetch failed:", err);
     return NextResponse.json({ balance: null });
   }
 }
