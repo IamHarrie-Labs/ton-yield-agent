@@ -1,6 +1,6 @@
 "use client";
 
-import { useTonWallet, useTonAddress } from "@tonconnect/ui-react";
+import { useTonWallet } from "@tonconnect/ui-react";
 import { useRouter }    from "next/navigation";
 import { useEffect, useState, useCallback, useRef } from "react";
 import { motion }       from "framer-motion";
@@ -89,7 +89,7 @@ function exportLogsCSV(logs: AgentLog[]) {
 // ─── Inner dashboard (needs toast context) ───────────────────────────────────
 function DashboardInner() {
   const wallet        = useTonWallet();
-  const connectedAddr = useTonAddress(false);      // raw address (0:hexhex) — APIs reject UQ/EQ friendly format
+  const connectedAddr = wallet?.account.address;   // raw 0:hexhex from TonConnect — most reliable source
   const router        = useRouter();
   const { toast }     = useToast();
 
@@ -145,14 +145,20 @@ function DashboardInner() {
     if (!wallet) router.push("/");
   }, [wallet, router]);
 
-  // ── Fetch connected wallet balance ───────────────────────────────────────
+  // ── Fetch connected wallet balance (direct from browser — no server proxy) ─
   useEffect(() => {
     if (!connectedAddr) return;
     const fetchBalance = async () => {
       try {
-        const res  = await fetch(`/api/balance?address=${encodeURIComponent(connectedAddr)}`);
+        // TonCenter v3 testnet — CORS-open GET, accepts raw 0:hexhex address
+        const res = await fetch(
+          `https://testnet.toncenter.com/api/v3/addressInformation?address=${encodeURIComponent(connectedAddr)}`,
+          { cache: "no-store" }
+        );
+        if (!res.ok) { setWalletBalance(null); return; }
         const data = await res.json();
-        setWalletBalance(typeof data.balance === "number" ? data.balance : null);
+        const ton  = Number(data.balance ?? 0) / 1e9;
+        setWalletBalance(isNaN(ton) ? null : ton);
       } catch {
         setWalletBalance(null);
       }

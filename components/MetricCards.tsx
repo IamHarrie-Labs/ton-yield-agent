@@ -10,9 +10,7 @@ interface Props {
   walletBalance: number | null;
 }
 
-export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday, walletBalance }: Props) {
-  const pnlUp = position.pnl >= 0;
-
+export function MetricCards({ tonstakerApy, bestPoolApy, actionsToday, walletBalance }: Props) {
   const cards = [
     {
       label:  "Wallet Balance",
@@ -36,15 +34,6 @@ export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday,
       pulse:  false,
     },
     {
-      label:  "Portfolio Value",
-      value:  `${position.totalTon.toFixed(2)} TON`,
-      sub:    pnlUp
-        ? `+${position.pnl.toFixed(4)} TON earned`
-        : `${position.pnl.toFixed(4)} TON`,
-      accent: pnlUp,
-      pulse:  false,
-    },
-    {
       label:  "Actions Today",
       value:  actionsToday.toString(),
       sub:    "Transactions executed",
@@ -54,7 +43,7 @@ export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday,
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
       {cards.map(({ label, value, sub, accent, pulse }) => (
         <div
           key={label}
@@ -64,7 +53,7 @@ export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday,
             {label}
           </p>
           <p className={`text-[18px] md:text-[24px] font-extrabold tracking-tight leading-none mb-1 truncate ${
-            pulse ? "text-black/25 dark:text-white/20 animate-pulse" : "text-black dark:text-white"
+            pulse ? "text-black/20 dark:text-white/15 animate-pulse" : "text-black dark:text-white"
           }`}>
             {value}
           </p>
