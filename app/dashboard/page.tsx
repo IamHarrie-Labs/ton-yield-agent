@@ -93,8 +93,9 @@ function DashboardInner() {
   const router        = useRouter();
   const { toast }     = useToast();
 
-  const [walletBalance, setWalletBalance] = useState<number | null>(null);
-  const [agentState,    setAgentState]    = useState<AgentState>("idle");
+  const [walletBalance,  setWalletBalance]  = useState<number | null>(null);
+  const [marketApy,      setMarketApy]      = useState<{ tonstaker: number; bestPool: number }>({ tonstaker: 4.2, bestPool: 0 });
+  const [agentState,     setAgentState]     = useState<AgentState>("idle");
   const [goal,          setGoal]          = useState<Goal>("balanced");
   const [amount,        setAmount]        = useState<number>(10);
   const [logs,          setLogs]          = useState<AgentLog[]>([]);
@@ -157,9 +158,28 @@ function DashboardInner() {
       }
     };
     fetchBalance();
-    const iv = setInterval(fetchBalance, 15_000); // refresh every 15s
+    const iv = setInterval(fetchBalance, 15_000);
     return () => clearInterval(iv);
   }, [connectedAddr]);
+
+  // ── Fetch live market APYs (independent of agent) ────────────────────────
+  useEffect(() => {
+    const fetchMarket = async () => {
+      try {
+        const res  = await fetch("/api/market");
+        const data = await res.json();
+        if (typeof data.tonstakerApy === "number" || typeof data.bestPoolApy === "number") {
+          setMarketApy({
+            tonstaker: data.tonstakerApy ?? 4.2,
+            bestPool:  data.bestPoolApy  ?? 0,
+          });
+        }
+      } catch { /* keep defaults */ }
+    };
+    fetchMarket();
+    const iv = setInterval(fetchMarket, 60_000);
+    return () => clearInterval(iv);
+  }, []);
 
   // ── Deduplicate logs ─────────────────────────────────────────────────────
   const mergeLogs = useCallback((incoming: AgentLog[]) => {
@@ -277,15 +297,9 @@ function DashboardInner() {
     }
   }, [poolPositions, addLog, toast]);
 
-  // ── Derive APY from logs ──────────────────────────────────────────────────
-  const tonstakerApy = parseFloat(
-    logs.find(l => l.message.includes("Tonstakers:"))
-      ?.message.match(/Tonstakers:\s*([\d.]+)%/)?.[1] ?? "4.20"
-  );
-  const bestPoolApy = parseFloat(
-    logs.find(l => l.message.includes("Best pool:"))
-      ?.message.match(/Best pool:\s*[\w/]+\s*@\s*([\d.]+)%/)?.[1] ?? "0"
-  );
+  // ── Live APY — from /api/market, updated every 60s ───────────────────────
+  const tonstakerApy = marketApy.tonstaker;
+  const bestPoolApy  = marketApy.bestPool;
 
   return (
     <>
@@ -308,7 +322,6 @@ function DashboardInner() {
               bestPoolApy={bestPoolApy}
               position={position}
               actionsToday={actionsToday}
-              walletBalance={walletBalance}
             />
           </motion.div>
 
@@ -326,6 +339,7 @@ function DashboardInner() {
                 agentWallet={agentWallet}
                 amount={amount}
                 onAmount={setAmount}
+                walletBalance={walletBalance}
                 onStart={() => setShowConfirm(true)}
                 onPause={pauseAgent}
               />

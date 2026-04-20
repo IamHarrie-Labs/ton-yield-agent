@@ -5,15 +5,16 @@ import { AgentState } from "@/app/dashboard/page";
 import { Play, Pause, Copy, Check, ExternalLink } from "lucide-react";
 
 interface Props {
-  state:       AgentState;
-  agentWallet: string | null;
-  amount:      number;
-  onAmount:    (n: number) => void;
-  onStart:     () => void;
-  onPause:     () => void;
+  state:         AgentState;
+  agentWallet:   string | null;
+  amount:        number;
+  onAmount:      (n: number) => void;
+  walletBalance: number | null;
+  onStart:       () => void;
+  onPause:       () => void;
 }
 
-export function AgentStatus({ state, agentWallet, amount, onAmount, onStart, onPause }: Props) {
+export function AgentStatus({ state, agentWallet, amount, onAmount, walletBalance, onStart, onPause }: Props) {
   const isRunning = state === "thinking" || state === "executing";
   const [copied, setCopied]   = useState(false);
 
@@ -100,9 +101,16 @@ export function AgentStatus({ state, agentWallet, amount, onAmount, onStart, onP
           : "border-black/[0.07] dark:border-white/[0.07]"
       }`}>
         <div className="flex-1 min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-black/30 dark:text-white/30 mb-1">
-            Capital to deploy
-          </p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.13em] text-black/30 dark:text-white/30">
+              Capital to deploy
+            </p>
+            {walletBalance !== null && (
+              <p className="text-[10px] font-mono text-black/35 dark:text-white/35">
+                Available: <span className="text-black/60 dark:text-white/60 font-semibold">{walletBalance.toFixed(2)} TON</span>
+              </p>
+            )}
+          </div>
           <div className="flex items-baseline gap-2">
             <input
               type="number"

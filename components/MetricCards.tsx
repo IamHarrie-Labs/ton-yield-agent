@@ -3,32 +3,25 @@
 import { Position } from "@/app/dashboard/page";
 
 interface Props {
-  tonstakerApy:  number;
-  bestPoolApy:   number;
-  position:      Position;
-  actionsToday:  number;
-  walletBalance: number | null;
+  tonstakerApy: number;
+  bestPoolApy:  number;
+  position:     Position;
+  actionsToday: number;
 }
 
-export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday, walletBalance }: Props) {
+export function MetricCards({ tonstakerApy, bestPoolApy, position, actionsToday }: Props) {
   const pnlUp = position.pnl >= 0;
   const cards = [
-    {
-      label:  "Wallet Balance",
-      value:  walletBalance !== null ? `${walletBalance.toFixed(2)} TON` : "—",
-      sub:    walletBalance !== null ? "Available to deploy" : "Fetching balance…",
-      accent: false,
-    },
-    { label: "Tonstakers APY",  value: `${tonstakerApy.toFixed(2)}%`,       sub: "Liquid staking",       accent: false },
-    { label: "Best Pool APY",   value: `${bestPoolApy.toFixed(2)}%`,         sub: "Top STON.fi pool",     accent: false },
+    { label: "Tonstakers APY",  value: `${tonstakerApy.toFixed(2)}%`,         sub: "Liquid staking",        accent: false },
+    { label: "Best Pool APY",   value: `${bestPoolApy.toFixed(2)}%`,           sub: "Top STON.fi pool",      accent: false },
     { label: "Portfolio Value", value: `${position.totalTon.toFixed(2)} TON`,
       sub: pnlUp ? `+${position.pnl.toFixed(4)} TON earned` : `${position.pnl.toFixed(4)} TON`,
       accent: pnlUp },
-    { label: "Actions Today",   value: actionsToday.toString(),               sub: "Transactions executed", accent: false },
+    { label: "Actions Today",   value: actionsToday.toString(),                 sub: "Transactions executed", accent: false },
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 md:gap-3">
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
       {cards.map(({ label, value, sub, accent }) => (
         <div
           key={label}
