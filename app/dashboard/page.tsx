@@ -89,7 +89,7 @@ function exportLogsCSV(logs: AgentLog[]) {
 // ─── Inner dashboard (needs toast context) ───────────────────────────────────
 function DashboardInner() {
   const wallet        = useTonWallet();
-  const connectedAddr = useTonAddress();          // friendly address of connected wallet
+  const connectedAddr = useTonAddress(false);      // raw address (0:hexhex) — APIs reject UQ/EQ friendly format
   const router        = useRouter();
   const { toast }     = useToast();
 
