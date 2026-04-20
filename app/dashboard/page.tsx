@@ -181,61 +181,110 @@ function DashboardInner() {
     return () => clearInterval(iv);
   }, []);
 
-  // ── Deduplicate logs ─────────────────────────────────────────────────────
-  const mergeLogs = useCallback((incoming: AgentLog[]) => {
-    setLogs(prev => {
-      const ids   = new Set(prev.map(l => l.id));
-      const fresh = incoming.filter(l => !ids.has(l.id));
-      if (!fresh.length) return prev;
-      return [...fresh, ...prev].slice(0, 100);
-    });
-  }, []);
-
-  // ── Poll agent ────────────────────────────────────────────────────────────
-  useEffect(() => {
-    if (!agentWallet) return;
-    const poll = async () => {
-      try {
-        const lastTs = logs[0]?.ts ?? 0;
-        const res    = await fetch(`/api/agent?wallet=${agentWallet}&since=${lastTs}`);
-        const data   = await res.json();
-        if (data.logs?.length) {
-          mergeLogs(data.logs);
-          // Surface tx toasts
-          data.logs.forEach((l: AgentLog) => {
-            if (l.type === "tx")      toast("success", "Transaction executed", l.message);
-            if (l.type === "error")   toast("error",   "Agent error", l.message);
-            if (l.type === "warning") toast("warning", "Notice", l.message);
-          });
-        }
-        if (data.position) {
-          setPosition(data.position);
-          setSnapshots(prev => {
-            const snap: Snapshot = {
-              ts:       Date.now(),
-              totalTon: data.position.totalTon,
-              pnl:      data.position.pnl,
-              apy:      tonstakerApy || bestPoolApy || 4.2,
-            };
-            const last = prev[prev.length - 1];
-            if (!last || Math.abs(last.totalTon - snap.totalTon) > 0.0001 || snap.ts - last.ts > 60_000)
-              return [...prev, snap].slice(-100);
-            return prev;
-          });
-        }
-        if (data.pools)   setPoolPositions(data.pools);
-        if (data.actions) setActionsToday(data.actions);
-        if (data.state)   setAgentState(data.state);
-      } catch { /* network hiccup — keep polling */ }
-    };
-    poll();
-    const iv = setInterval(poll, 4000);
-    return () => clearInterval(iv);
-  }, [agentWallet, mergeLogs]); // eslint-disable-line react-hooks/exhaustive-deps
-
   const addLog = useCallback((type: AgentLog["type"], message: string, txHash?: string) => {
     setLogs(prev => [{ id: crypto.randomUUID(), ts: Date.now(), type, message, txHash }, ...prev].slice(0, 100));
   }, []);
+
+  // ── Run one agent cycle via stateless /api/agent/cycle ───────────────────
+  const cycleRunning = useRef(false);
+
+  const runCycle = useCallback(async (
+    walletAddr: string,
+    currentGoal: string,
+    currentCapital: number,
+    currentPos: typeof position,
+    currentPools: typeof poolPositions,
+  ) => {
+    if (cycleRunning.current) return; // don't stack cycles
+    cycleRunning.current = true;
+    setAgentState("thinking");
+    try {
+      const res  = await fetch("/api/agent/cycle", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          goal:         currentGoal,
+          capitalTon:   currentCapital,
+          position:     currentPos,
+          pools:        currentPools,
+          walletAddress: walletAddr,
+        }),
+      });
+      if (!res.ok) throw new Error(`Cycle failed: ${res.status}`);
+      const data = await res.json();
+
+      // Prepend new logs
+      if (data.logs?.length) {
+        setLogs(prev => [...data.logs, ...prev].slice(0, 200));
+        data.logs.forEach((l: AgentLog) => {
+          if (l.type === "tx")      toast("success", "Transaction executed", l.message);
+          if (l.type === "error")   toast("error",   "Agent error",          l.message);
+          if (l.type === "warning") toast("warning", "Notice",               l.message);
+        });
+        // Count tx logs as actions
+        const txCount = (data.logs as AgentLog[]).filter(l => l.type === "tx").length;
+        if (txCount > 0) setActionsToday(prev => prev + txCount);
+      }
+
+      if (data.position) {
+        setPosition(data.position);
+        setSnapshots(prev => {
+          const snap: Snapshot = {
+            ts:       Date.now(),
+            totalTon: data.position.totalTon,
+            pnl:      data.position.pnl,
+            apy:      (data.tonstakerApy ?? 4.2),
+          };
+          const last = prev[prev.length - 1];
+          if (!last || Math.abs(last.totalTon - snap.totalTon) > 0.0001 || snap.ts - last.ts > 30_000)
+            return [...prev, snap].slice(-100);
+          return prev;
+        });
+      }
+      if (data.pools) setPoolPositions(data.pools);
+      if (data.tonstakerApy || data.bestPoolApy) {
+        setMarketApy({
+          tonstaker: data.tonstakerApy ?? marketApy.tonstaker,
+          bestPool:  data.bestPoolApy  ?? marketApy.bestPool,
+        });
+      }
+      setAgentState("executing");
+    } catch (err: any) {
+      addLog("error", `Cycle error: ${err.message}`);
+      setAgentState("paused");
+    } finally {
+      cycleRunning.current = false;
+    }
+  }, [toast, addLog, marketApy]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Trigger cycles every 30s while executing ─────────────────────────────
+  const agentStateRef      = useRef(agentState);
+  const positionRef        = useRef(position);
+  const poolPositionsRef   = useRef(poolPositions);
+  const goalRef            = useRef(goal);
+  const amountRef          = useRef(amount);
+  const agentWalletRef     = useRef(agentWallet);
+  agentStateRef.current    = agentState;
+  positionRef.current      = position;
+  poolPositionsRef.current = poolPositions;
+  goalRef.current          = goal;
+  amountRef.current        = amount;
+  agentWalletRef.current   = agentWallet;
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      if (agentStateRef.current !== "executing" && agentStateRef.current !== "thinking") return;
+      if (!agentWalletRef.current) return;
+      runCycle(
+        agentWalletRef.current,
+        goalRef.current,
+        amountRef.current,
+        positionRef.current,
+        poolPositionsRef.current,
+      );
+    }, 30_000);
+    return () => clearInterval(iv);
+  }, [runCycle]);
 
   // ── Start agent ───────────────────────────────────────────────────────────
   const startAgent = async () => {
@@ -243,30 +292,27 @@ function DashboardInner() {
     setAgentState("thinking");
     addLog("info", `Deploying agentic wallet — strategy: ${goal}, capital: ${amount} TON…`);
     try {
+      // Deploy wallet
       const res  = await fetch("/api/agent", {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify({ goal, amount, ownerAddress: wallet?.account.address }),
+        body:    JSON.stringify({ ownerAddress: wallet?.account.address }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
-      if (data.agentWalletAddress) {
-        setAgentWallet(data.agentWalletAddress);
-        addLog("info",   `Agentic wallet: ${data.agentWalletAddress.slice(0, 12)}…`);
-        if (data.walletBalance !== undefined && data.walletBalance < amount) {
-          addLog("warning",
-            `Wallet has ${data.walletBalance.toFixed(4)} TON — fund it to enable real transactions.`
-          );
-          toast("warning", "Wallet needs funding",
-            `Send ${amount} TON to ${data.agentWalletAddress.slice(0, 12)}… on testnet`
-          );
-        }
-        addLog("action", `Agent loop started — goal: ${goal}`);
-        setAgentState("executing");
-        toast("success", "Agent started", `Deploying ${amount} TON with ${goal} strategy`);
-      }
+
+      const walletAddr = data.agentWalletAddress;
+      setAgentWallet(walletAddr);
+      addLog("info", `Agentic wallet deployed: ${walletAddr.slice(0, 14)}…`);
+      toast("success", "Agent started", `Running ${goal} strategy with ${amount} TON`);
+
+      // Run first cycle immediately
+      const initialPos = { staked: 0, lpValue: 0, totalTon: amount, pnl: 0 };
+      setPosition(initialPos);
+      setAgentState("executing");
+      await runCycle(walletAddr, goal, amount, initialPos, []);
     } catch (err: any) {
-      addLog("error", `Failed to start agent: ${err.message}`);
+      addLog("error", `Failed to start: ${err.message}`);
       setAgentState("idle");
       toast("error", "Failed to start", err.message);
     }
