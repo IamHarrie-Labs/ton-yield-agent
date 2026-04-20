@@ -1,13 +1,10 @@
-<svg width="32" height="32" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Outer ring arc — oracle circle -->
-  <circle cx="28" cy="28" r="24" stroke="#C8392B" stroke-width="2.5" stroke-dasharray="128 22" stroke-dashoffset="-8" fill="none" stroke-linecap="round"/>
-  <!-- Inner glyph — stylised O with a vertical oracle-slit -->
-  <circle cx="28" cy="28" r="11" fill="none" stroke="#1A1410" stroke-width="2"/>
-  <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- Corner tick marks — precision / data -->
-  <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" stroke-width="2" stroke-linecap="round"/>
-  <line x1="46" y1="14" x2="42.2" y2="16.2" stroke="#1A1410" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-  <line x1="46" y1="42" x2="42.2" y2="39.8" stroke="#1A1410" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-  <line x1="10" y1="14" x2="13.8" y2="16.2" stroke="#1A1410" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
-  <line x1="10" y1="42" x2="13.8" y2="39.8" stroke="#1A1410" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Dark bg pill -->
+  <rect width="32" height="32" rx="7" fill="#0A0C12"/>
+  <!-- Outer hex -->
+  <polygon points="16,2 28,9 28,23 16,30 4,23 4,9" fill="none" stroke="rgba(0,229,255,0.22)" stroke-width="1"/>
+  <!-- Inner hex -->
+  <polygon points="16,5.5 25.5,10.75 25.5,21.25 16,26.5 6.5,21.25 6.5,10.75" fill="none" stroke="rgba(0,229,255,0.38)" stroke-width="0.75"/>
+  <!-- Lightning bolt -->
+  <path d="M11.5 18.5 L16 10.5 L20.5 18.5 H17.5 L19.5 23.5 L13 17 H16Z" fill="#00E5FF"/>
 </svg>

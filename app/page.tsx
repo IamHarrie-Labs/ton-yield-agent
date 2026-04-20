@@ -38,11 +38,10 @@ export default function LandingPage() {
 
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <svg width="24" height="24" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
-              <circle cx="28" cy="28" r="11" fill="none" stroke="currentColor" strokeWidth="2" className="text-black dark:text-white"/>
-              <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
-              <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+            <svg width="24" height="24" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="rgba(0,229,255,0.2)" strokeWidth="1"/>
+              <polygon points="18,6 28,12 28,24 18,30 8,24 8,12" fill="none" stroke="rgba(0,229,255,0.4)" strokeWidth="1"/>
+              <path d="M13 20 L18 11 L23 20 H19.5 L21.5 25 L14.5 17.5 H17.5Z" fill="#00E5FF"/>
             </svg>
             <span className="font-semibold text-[15px] tracking-tight text-black dark:text-white">Surge</span>
           </div>
@@ -223,11 +222,10 @@ export default function LandingPage() {
       <footer className="bg-black border-t border-white/[0.06] px-6 py-8">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <svg width="18" height="18" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
-              <circle cx="28" cy="28" r="11" fill="none" stroke="white" strokeWidth="2" opacity="0.4"/>
-              <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
-              <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+            <svg width="18" height="18" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <polygon points="18,2 32,10 32,26 18,34 4,26 4,10" fill="none" stroke="rgba(0,229,255,0.25)" strokeWidth="1"/>
+              <polygon points="18,6 28,12 28,24 18,30 8,24 8,12" fill="none" stroke="rgba(0,229,255,0.45)" strokeWidth="1"/>
+              <path d="M13 20 L18 11 L23 20 H19.5 L21.5 25 L14.5 17.5 H17.5Z" fill="#00E5FF"/>
             </svg>
             <span className="text-white/40 text-[13px]">Surge</span>
           </div>
