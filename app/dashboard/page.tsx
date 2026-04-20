@@ -146,50 +146,29 @@ function DashboardInner() {
     if (!wallet) router.push("/");
   }, [wallet, router]);
 
-  // ── Fetch connected wallet balance (direct from browser — no server proxy) ─
+  // ── Fetch wallet balance via server route (avoids browser CORS limits) ─────
   useEffect(() => {
     if (!connectedAddr) return;
 
     const fetchBalance = async () => {
-      // Pick the right network endpoint based on wallet.account.chain
-      // -239 = mainnet, -3 = testnet.  Anything else → try mainnet.
-      const isTestnet   = walletChain === "-3";
-      const toncenterBase = isTestnet
-        ? "https://testnet.toncenter.com/api/v3"
-        : "https://toncenter.com/api/v3";
-
-      // Strategy: TonCenter v3  →  TonAPI fallback
       try {
+        // Route through /api/balance — server has no CORS constraints.
+        // network=auto → tries mainnet first, falls back to testnet.
+        // We also hint the known chain so the server can skip a round-trip.
+        const network = walletChain === "-3" ? "testnet"
+                      : walletChain === "-239" ? "mainnet"
+                      : "auto";
         const res  = await fetch(
-          `${toncenterBase}/addressInformation?address=${encodeURIComponent(connectedAddr)}`,
+          `/api/balance?address=${encodeURIComponent(connectedAddr)}&network=${network}`,
           { cache: "no-store" },
         );
-        if (res.ok) {
-          const data = await res.json();
-          const raw  = data.balance ?? "0";
-          const ton  = Number(raw) / 1e9;
-          if (!isNaN(ton)) { setWalletBalance(ton); return; }
-        }
-      } catch { /* fall through to TonAPI */ }
-
-      // Fallback: TonAPI (mainnet only)
-      try {
-        const apiBase = isTestnet
-          ? "https://testnet.tonapi.io/v2"
-          : "https://tonapi.io/v2";
-        const res2 = await fetch(
-          `${apiBase}/accounts/${encodeURIComponent(connectedAddr)}`,
-          { cache: "no-store" },
-        );
-        if (res2.ok) {
-          const data2 = await res2.json();
-          const ton2  = Number(data2.balance ?? 0) / 1e9;
-          setWalletBalance(isNaN(ton2) ? null : ton2);
-          return;
-        }
-      } catch { /* give up */ }
-
-      setWalletBalance(null);
+        if (!res.ok) { setWalletBalance(null); return; }
+        const data = await res.json();
+        const ton  = typeof data.balance === "number" ? data.balance : null;
+        setWalletBalance(ton);
+      } catch {
+        setWalletBalance(null);
+      }
     };
 
     fetchBalance();
