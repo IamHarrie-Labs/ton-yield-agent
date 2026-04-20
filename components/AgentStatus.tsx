@@ -31,7 +31,7 @@ export function AgentStatus({ state, agentWallet, amount, onAmount, onStart, onP
       {/* Header row */}
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <p className="font-bold text-[15px] tracking-tight text-black dark:text-white mb-0.5">Yield Agent</p>
+          <p className="font-bold text-[15px] tracking-tight text-black dark:text-white mb-0.5">Surge Agent</p>
           {agentWallet ? (
             <div className="flex items-center gap-1.5 flex-wrap">
               <p className="text-[11px] font-mono text-black/30 dark:text-white/30 truncate max-w-[160px] sm:max-w-none">

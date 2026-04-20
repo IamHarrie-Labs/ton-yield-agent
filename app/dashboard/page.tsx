@@ -81,7 +81,7 @@ function exportLogsCSV(logs: AgentLog[]) {
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement("a");
   a.href     = url;
-  a.download = `ton-yield-agent-logs-${Date.now()}.csv`;
+  a.download = `surge-logs-${Date.now()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }

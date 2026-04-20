@@ -200,7 +200,7 @@ IMPORTANT RULES:
     const response = await anthropic.messages.create({
       model:      "claude-haiku-4-5-20251001",
       max_tokens: 512,
-      system: `You are an autonomous DeFi yield agent on TON blockchain.
+      system: `You are Surge, an autonomous DeFi yield agent on TON blockchain.
 Respond with ONLY a raw JSON object — no markdown, no backticks, no explanation text whatsoever.
 Schema: {"action":"stake"|"provide_lp"|"hold","amount":number,"poolIndex":0,"reasoning":"string"}
 - poolIndex: index into the pools array (0 = best pool)

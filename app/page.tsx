@@ -38,10 +38,13 @@ export default function LandingPage() {
 
           {/* Logo */}
           <div className="flex items-center gap-2.5">
-            <div className="w-6 h-6 bg-[#0098EA] rounded-sm flex items-center justify-center">
-              <span className="text-white text-[10px] font-bold">TY</span>
-            </div>
-            <span className="font-semibold text-[15px] tracking-tight text-black dark:text-white">TON Yield Agent</span>
+            <svg width="24" height="24" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
+              <circle cx="28" cy="28" r="11" fill="none" stroke="currentColor" strokeWidth="2" className="text-black dark:text-white"/>
+              <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
+              <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span className="font-semibold text-[15px] tracking-tight text-black dark:text-white">Surge</span>
           </div>
 
           {/* Nav links */}
@@ -220,10 +223,13 @@ export default function LandingPage() {
       <footer className="bg-black border-t border-white/[0.06] px-6 py-8">
         <div className="max-w-[1200px] mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-5 h-5 bg-[#0098EA] rounded-sm flex items-center justify-center">
-              <span className="text-white text-[9px] font-bold">TY</span>
-            </div>
-            <span className="text-white/40 text-[13px]">TON Yield Agent</span>
+            <svg width="18" height="18" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
+              <circle cx="28" cy="28" r="11" fill="none" stroke="white" strokeWidth="2" opacity="0.4"/>
+              <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
+              <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+            </svg>
+            <span className="text-white/40 text-[13px]">Surge</span>
           </div>
           <p className="text-[12px] text-white/20">
             Built for the STON.fi Vibe Coding Hackathon · Tonstakers track · 2025

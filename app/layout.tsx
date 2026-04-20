@@ -4,16 +4,16 @@ import { TonProviders }   from "@/components/TonProviders";
 import { ThemeProvider }  from "@/components/ThemeProvider";
 
 export const metadata: Metadata = {
-  title: "TON Yield Agent",
-  description: "Autonomous DeFi yield optimization powered by TON Agentic Wallets",
+  title: "Surge",
+  description: "Surge — Autonomous DeFi yield optimization powered by TON Agentic Wallets",
   icons: {
     icon: "/icon.svg",
     shortcut: "/icon.svg",
     apple: "/icon.svg",
   },
   openGraph: {
-    title: "TON Yield Agent",
-    description: "Your autonomous DeFi agent on TON",
+    title: "Surge",
+    description: "Surge — Your autonomous DeFi agent on TON",
     images: ["/icon.svg"],
   },
 };

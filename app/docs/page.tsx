@@ -106,10 +106,13 @@ export default function DocsPage() {
             </Link>
             <div className="w-px h-4 bg-black/10 dark:bg-white/10" />
             <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-[#0098EA] rounded-sm flex items-center justify-center">
-                <span className="text-white text-[9px] font-bold">TY</span>
-              </div>
-              <span className="font-bold text-[14px]">TON Yield Agent</span>
+              <svg width="20" height="20" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="28" cy="28" r="24" stroke="#C8392B" strokeWidth="2.5" strokeDasharray="128 22" strokeDashoffset="-8" fill="none" strokeLinecap="round"/>
+                <circle cx="28" cy="28" r="11" fill="none" stroke="currentColor" strokeWidth="2" className="text-black dark:text-white"/>
+                <line x1="28" y1="17" x2="28" y2="39" stroke="#C8392B" strokeWidth="2.5" strokeLinecap="round"/>
+                <line x1="28" y1="4" x2="28" y2="10" stroke="#C8392B" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+              <span className="font-bold text-[14px]">Surge</span>
               <span className="text-[11px] text-black/30 dark:text-white/30 font-medium ml-1">/ Docs</span>
             </div>
           </div>
@@ -152,7 +155,7 @@ export default function DocsPage() {
           {/* ── Overview ── */}
           <Section id="overview" title="Overview">
             <P>
-              <strong className="text-black dark:text-white">TON Yield Agent</strong> is an autonomous DeFi agent built on the TON blockchain
+              <strong className="text-black dark:text-white">Surge</strong> is an autonomous DeFi agent built on the TON blockchain
               that continuously optimizes your yield by allocating capital across liquid staking (Tonstakers) and
               liquidity pools (STON.fi). It runs 24/7, reasons about market conditions using Claude AI, and executes
               transactions on your behalf — no manual intervention required after setup.
@@ -314,7 +317,7 @@ export default function DocsPage() {
           {/* ── Wallet ── */}
           <Section id="wallet" title="Agentic Wallet Architecture">
             <P>
-              TON Yield Agent uses a split-key architecture for autonomous operation without requiring your approval
+              Surge uses a split-key architecture for autonomous operation without requiring your approval
               on every transaction:
             </P>
             <div className="rounded-xl border border-black/[0.07] dark:border-white/[0.07] overflow-hidden mt-4">

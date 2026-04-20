@@ -37,7 +37,7 @@ export function TopBar({ agentState, agentWallet }: {
             <line x1="10" y1="42" x2="13.8" y2="39.8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.35" className="text-black dark:text-white"/>
           </svg>
           <span className="font-bold text-[14px] md:text-[15px] tracking-tight text-black dark:text-white">
-            TON Yield
+            Surge
           </span>
         </a>
         {agentWallet && (
