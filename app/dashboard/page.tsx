@@ -93,6 +93,7 @@ function DashboardInner() {
   const router        = useRouter();
   const { toast }     = useToast();
 
+  const walletChain    = wallet?.account.chain;                              // "-239"=mainnet, "-3"=testnet
   const [walletBalance,  setWalletBalance]  = useState<number | null>(null);
   const [marketApy,      setMarketApy]      = useState<{ tonstaker: number; bestPool: number }>({ tonstaker: 4.2, bestPool: 0 });
   const [agentState,     setAgentState]     = useState<AgentState>("idle");
@@ -148,25 +149,53 @@ function DashboardInner() {
   // ── Fetch connected wallet balance (direct from browser — no server proxy) ─
   useEffect(() => {
     if (!connectedAddr) return;
+
     const fetchBalance = async () => {
+      // Pick the right network endpoint based on wallet.account.chain
+      // -239 = mainnet, -3 = testnet.  Anything else → try mainnet.
+      const isTestnet   = walletChain === "-3";
+      const toncenterBase = isTestnet
+        ? "https://testnet.toncenter.com/api/v3"
+        : "https://toncenter.com/api/v3";
+
+      // Strategy: TonCenter v3  →  TonAPI fallback
       try {
-        // TonCenter v3 testnet — CORS-open GET, accepts raw 0:hexhex address
-        const res = await fetch(
-          `https://testnet.toncenter.com/api/v3/addressInformation?address=${encodeURIComponent(connectedAddr)}`,
-          { cache: "no-store" }
+        const res  = await fetch(
+          `${toncenterBase}/addressInformation?address=${encodeURIComponent(connectedAddr)}`,
+          { cache: "no-store" },
         );
-        if (!res.ok) { setWalletBalance(null); return; }
-        const data = await res.json();
-        const ton  = Number(data.balance ?? 0) / 1e9;
-        setWalletBalance(isNaN(ton) ? null : ton);
-      } catch {
-        setWalletBalance(null);
-      }
+        if (res.ok) {
+          const data = await res.json();
+          const raw  = data.balance ?? "0";
+          const ton  = Number(raw) / 1e9;
+          if (!isNaN(ton)) { setWalletBalance(ton); return; }
+        }
+      } catch { /* fall through to TonAPI */ }
+
+      // Fallback: TonAPI (mainnet only)
+      try {
+        const apiBase = isTestnet
+          ? "https://testnet.tonapi.io/v2"
+          : "https://tonapi.io/v2";
+        const res2 = await fetch(
+          `${apiBase}/accounts/${encodeURIComponent(connectedAddr)}`,
+          { cache: "no-store" },
+        );
+        if (res2.ok) {
+          const data2 = await res2.json();
+          const ton2  = Number(data2.balance ?? 0) / 1e9;
+          setWalletBalance(isNaN(ton2) ? null : ton2);
+          return;
+        }
+      } catch { /* give up */ }
+
+      setWalletBalance(null);
     };
+
     fetchBalance();
     const iv = setInterval(fetchBalance, 15_000);
     return () => clearInterval(iv);
-  }, [connectedAddr]);
+  }, [connectedAddr, walletChain]);
 
   // ── Fetch live market APYs (independent of agent) ────────────────────────
   useEffect(() => {
